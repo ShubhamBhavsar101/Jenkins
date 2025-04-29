@@ -5,4 +5,11 @@ This will contain only the Questions for Jenkins.
 2. How to get IP Address for wsl running locally - wsl hostname -I
 3. How to change hostname in linux - hostnamectl set-hostname sonarqube
 4. How to setup github webhook to trigger jenkins pipeline.
-5. 
+
+
+## Alternatives
+1. ArgoCD
+2. Github Actions
+3. GitLab Pipelines
+4. Octopus Deploy - Solution with Support.
+5. Tekton
