@@ -1,0 +1,10 @@
+commit a1102154e4af441db5220c7f9af516a2ad13e328
+tree 1931ee640f89ffe7e726b500fe7755c3dcead4a0
+parent b64e04e5355a82d7ec904c7ac6bbeabfd877178c
+author Shubham Bhavsar <shubhamcbhavsar198@gmail.com> 2025-06-30 09:20:46 +0530
+committer Shubham Bhavsar <shubhamcbhavsar198@gmail.com> 2025-06-30 09:20:46 +0530
+
+    Update deployment image to version 105
+
+
+:100644 100644 2d91d4e8bc8752877621738444942abd541f5e8c c93d733e113064347ab1c4d7bef2e2656936b52c M	spring-boot-app-manifests/deployment.yml

@@ -1,0 +1,11 @@
+commit dd6c70841f2050d525f3f385dc61bf0dfa8e95ae
+tree f81f647b7df7c4e1e594f913aa29b843b55437da
+parent 8d8b6171491eefe33706892066142368b85b0d55
+author Shubh <Shubham@Venom.com> 2025-06-29 07:25:18 +0530
+committer Shubh <Shubham@Venom.com> 2025-06-29 07:25:18 +0530
+
+    Added Green
+
+
+:100644 100644 02b75b3d8c2fbb1cd9ecc72044addb91f637dc28 b9f78741fe8654d5a32e24e7559033324ba10870 M	configure_blue.yml
+:100644 100644 e69de29bb2d1d6434b8b29ae775ad8c2e48c5391 c104e3fe8b313a6f2b61d06b9b09269199e51f85 M	configure_green.yml

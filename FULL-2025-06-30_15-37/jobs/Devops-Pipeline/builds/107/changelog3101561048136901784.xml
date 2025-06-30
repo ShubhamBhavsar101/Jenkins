@@ -1,0 +1,20 @@
+commit 91e76db010268e4b61977c6b180e970e6ffd8238
+tree e3db927769b0c8e1ea6c43b1d716ea843c59bddf
+parent a1102154e4af441db5220c7f9af516a2ad13e328
+author Shubham Bhavsar <shubhamcbhavsar198@gmail.com> 2025-06-30 09:22:49 +0530
+committer Shubham Bhavsar <shubhamcbhavsar198@gmail.com> 2025-06-30 09:22:49 +0530
+
+    Update deployment image to version 106
+
+
+:100644 100644 c93d733e113064347ab1c4d7bef2e2656936b52c 2d18397806bb9f76b37c9a26fc4f4d57d55fc8f4 M	spring-boot-app-manifests/deployment.yml
+commit f2e1377b93eec861f7874dd2bafd855cd7d8a9bb
+tree 64a964bedbb4330e8579853f9ecb41cd81317cea
+parent 71f8d536acab737092ca51dbc3c15f8815e62972
+author Shubh <Shubham@Venom.com> 2025-06-30 09:22:04 +0530
+committer Shubh <Shubham@Venom.com> 2025-06-30 09:22:04 +0530
+
+    Shubham Bhavsar
+
+
+:100644 100644 00d1bb51f05b708ff7514e79db92fb44b3dcbec4 5e6329338b972bb93f16869a1ce29603d63feb92 M	spring-boot-app/src/main/resources/static/index.html

@@ -1,0 +1,565 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-build plugin="workflow-job@1537.v66038d35fc76">
+  <actions>
+    <hudson.model.CauseAction>
+      <causeBag class="linked-hash-map">
+        <entry>
+          <hudson.model.Cause_-UserIdCause>
+            <userId>shubh</userId>
+          </hudson.model.Cause_-UserIdCause>
+          <int>1</int>
+        </entry>
+      </causeBag>
+    </hudson.model.CauseAction>
+    <jenkins.metrics.impl.TimeInQueueAction plugin="metrics@4.2.32-476.v5042e1c1edd7">
+      <queuingDurationMillis>2</queuingDurationMillis>
+      <blockedDurationMillis>0</blockedDurationMillis>
+      <buildableDurationMillis>0</buildableDurationMillis>
+      <waitingDurationMillis>0</waitingDurationMillis>
+    </jenkins.metrics.impl.TimeInQueueAction>
+    <org.jenkinsci.plugins.workflow.libs.LibrariesAction plugin="pipeline-groovy-lib@752.vdddedf804e72">
+      <libraries/>
+    </org.jenkinsci.plugins.workflow.libs.LibrariesAction>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.ExecutionModelAction plugin="pipeline-model-definition@2.2255.v56a_15e805f12">
+      <stagesUUID>668df154-461a-492f-b351-b634bae85e69</stagesUUID>
+      <pipelineDefs>
+        <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTPipelineDef plugin="pipeline-model-api@2.2255.v56a_15e805f12">
+          <stages>
+            <stages>
+              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+                <name>Checkout Code</name>
+                <branches>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                    <name>default</name>
+                    <steps>
+                      <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStep>
+                        <name>git</name>
+                        <args class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTNamedArgumentList">
+                          <arguments class="linked-hash-map">
+                            <entry>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                                <key>branch</key>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                                <value class="string">main</value>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                            </entry>
+                            <entry>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                                <key>url</key>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                                <value class="string">https://github.com/ShubhamBhavsar101/AWS-Blue-Green-Deployment</value>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                            </entry>
+                          </arguments>
+                        </args>
+                      </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStep>
+                    </steps>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                </branches>
+              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+                <name>Live Traffic Check</name>
+                <branches>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                    <name>default</name>
+                    <steps>
+                      <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTScriptBlock>
+                        <name>script</name>
+                        <args class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTNamedArgumentList">
+                          <arguments class="linked-hash-map">
+                            <entry>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                                <key>scriptBlock</key>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                                <value class="string">def current_live_tg = sh(script: &quot;aws elbv2 describe-listeners --listener-arns ${LISTENER_ARN} | jq -r &apos;.Listeners[0].DefaultActions[0].TargetGroupArn&apos;&quot;, returnStdout: true).trim()
+                    echo &quot;The live traffic is in ${current_live_tg}&quot;</value>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                            </entry>
+                          </arguments>
+                        </args>
+                      </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTScriptBlock>
+                    </steps>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                </branches>
+              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+                <name>Confirmation to Deploy Code</name>
+                <branches>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                    <name>default</name>
+                    <steps>
+                      <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTScriptBlock>
+                        <name>script</name>
+                        <args class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTNamedArgumentList">
+                          <arguments class="linked-hash-map">
+                            <entry>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                                <key>scriptBlock</key>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                                <value class="string">def current_live_tg = sh(script: &quot;aws elbv2 describe-listeners --listener-arns ${LISTENER_ARN} | jq -r &apos;.Listeners[0].DefaultActions[0].TargetGroupArn&apos;&quot;, returnStdout: true).trim()
+
+                    if (current_live_tg == BLUE_TG_ARN) {
+                        env.DEPLOY_TO_ENV = &apos;green&apos;
+                        env.DEPLOY_TO_TG_ARN = GREEN_TG_ARN
+                        env.SWITCH_TO_ARN = GREEN_TG_ARN
+                    } else {
+                        env.DEPLOY_TO_ENV = &apos;blue&apos;
+                        env.DEPLOY_TO_TG_ARN = BLUE_TG_ARN
+                        env.SWITCH_TO_ARN = BLUE_TG_ARN
+                    }
+                    
+                    input &quot;The current live environment is NOT &apos;${env.DEPLOY_TO_ENV.toUpperCase()}&apos;. This pipeline will now configure and deploy to the &apos;${env.DEPLOY_TO_ENV.toUpperCase()}&apos; environment. Do you want to continue?&quot;</value>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                            </entry>
+                          </arguments>
+                        </args>
+                      </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTScriptBlock>
+                    </steps>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                </branches>
+              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+                <name>Configure Inactive Server (Automated)</name>
+                <branches>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                    <name>default</name>
+                    <steps>
+                      <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTScriptBlock>
+                        <name>script</name>
+                        <args class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTNamedArgumentList">
+                          <arguments class="linked-hash-map">
+                            <entry>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                                <key>scriptBlock</key>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                                <value class="string">echo &quot;Running Ansible on the existing &apos;${env.DEPLOY_TO_ENV}-server&apos;...&quot;
+                    // We MUST provide the inventory here so Ansible can find the remote EC2 hosts.
+                    if (env.DEPLOY_TO_ENV == &apos;blue&apos;) {
+                        ansiblePlaybook(
+                            playbook: &apos;configure_blue.yml&apos;,
+                            inventory: &apos;aws_ec2.yml&apos;
+                        )
+                    } else {
+                        ansiblePlaybook(
+                            playbook: &apos;configure_green.yml&apos;,
+                            inventory: &apos;aws_ec2.yml&apos;
+                        )
+                    }</value>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                            </entry>
+                          </arguments>
+                        </args>
+                      </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTScriptBlock>
+                    </steps>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                </branches>
+              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+                <name>Manual Approval to Go Live</name>
+                <branches>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                    <name>default</name>
+                    <steps>
+                      <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTScriptBlock>
+                        <name>script</name>
+                        <args class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTNamedArgumentList">
+                          <arguments class="linked-hash-map">
+                            <entry>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                                <key>scriptBlock</key>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                                <value class="string">echo &quot;Waiting 10 seconds for health checks to stabilize...&quot;
+                    sleep(10)
+                    
+                    def health = sh(
+                        script: &quot;aws elbv2 describe-target-health --target-group-arn ${env.DEPLOY_TO_TG_ARN} | jq -r &apos;.TargetHealthDescriptions[0].TargetHealth.State&apos;&quot;,
+                        returnStdout: true
+                    ).trim()
+                    
+                    if (health != &apos;healthy&apos;) {
+                        error(&quot;Deployment failed: The new environment &apos;${env.DEPLOY_TO_ENV}&apos; is not healthy. Current status is &apos;${health}&apos;. Aborting.&quot;)
+                    }
+                    
+                    echo &quot;SUCCESS: The new &apos;${env.DEPLOY_TO_ENV}&apos; environment is configured and HEALTHY.&quot;
+                    input &quot;Ready to switch live traffic to the &apos;${env.DEPLOY_TO_ENV}&apos; environment?&quot;</value>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                            </entry>
+                          </arguments>
+                        </args>
+                      </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTScriptBlock>
+                    </steps>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                </branches>
+              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+                <name>Switch Live Traffic (Automated)</name>
+                <branches>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                    <name>default</name>
+                    <steps>
+                      <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTScriptBlock>
+                        <name>script</name>
+                        <args class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTNamedArgumentList">
+                          <arguments class="linked-hash-map">
+                            <entry>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                                <key>scriptBlock</key>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                                <value class="string">echo &quot;Switching live traffic automatically to ${env.DEPLOY_TO_ENV.toUpperCase()}...&quot;
+                    // The inventory parameter is NOT needed here because the playbook&apos;s
+                    // &apos;hosts&apos; is set to &apos;localhost&apos;, which Ansible always knows.
+                    ansiblePlaybook(
+                        playbook: &apos;traffic_switch.yml&apos;,
+                        extraVars: [
+                            listener_arn: LISTENER_ARN,
+                            new_target_group_arn: env.SWITCH_TO_ARN
+                        ]
+                    )</value>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                            </entry>
+                          </arguments>
+                        </args>
+                      </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTScriptBlock>
+                    </steps>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                </branches>
+              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+                <name>Deployment Complete</name>
+                <branches>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                    <name>default</name>
+                    <steps>
+                      <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStep>
+                        <name>echo</name>
+                        <args class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTNamedArgumentList">
+                          <arguments class="linked-hash-map">
+                            <entry>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                                <key>message</key>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-GStringValue>
+                                <value class="string">&quot;Success! The ${env.DEPLOY_TO_ENV.toUpperCase()} environment is now LIVE.&quot;</value>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-GStringValue>
+                            </entry>
+                          </arguments>
+                        </args>
+                      </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStep>
+                    </steps>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                </branches>
+              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+            </stages>
+            <uuid>668df154-461a-492f-b351-b634bae85e69</uuid>
+          </stages>
+          <environment>
+            <variables class="linked-hash-map">
+              <entry>
+                <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                  <key>AWS_ACCESS_KEY_ID</key>
+                </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTInternalFunctionCall>
+                  <name>credentials</name>
+                  <args>
+                    <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                      <value class="string">aws-access-key</value>
+                    </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                  </args>
+                </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTInternalFunctionCall>
+              </entry>
+              <entry>
+                <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                  <key>AWS_SECRET_ACCESS_KEY</key>
+                </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTInternalFunctionCall>
+                  <name>credentials</name>
+                  <args>
+                    <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                      <value class="string">aws-secret-key</value>
+                    </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                  </args>
+                </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTInternalFunctionCall>
+              </entry>
+              <entry>
+                <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                  <key>AWS_DEFAULT_REGION</key>
+                </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                  <value class="string">ap-south-1</value>
+                </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+              </entry>
+            </variables>
+          </environment>
+          <agent>
+            <agentType>
+              <key>any</key>
+            </agentType>
+          </agent>
+        </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTPipelineDef>
+      </pipelineDefs>
+    </org.jenkinsci.plugins.pipeline.modeldefinition.actions.ExecutionModelAction>
+    <com.cloudbees.plugins.credentials.builds.CredentialsParameterBinder plugin="credentials@1415.v831096eb_5534">
+      <boundCredentials class="concurrent-hash-map"/>
+    </com.cloudbees.plugins.credentials.builds.CredentialsParameterBinder>
+    <hudson.plugins.git.util.BuildData plugin="git@5.7.0">
+      <buildsByBranchName>
+        <entry>
+          <string>refs/remotes/origin/main</string>
+          <hudson.plugins.git.util.Build>
+            <marked plugin="git-client@6.2.0">
+              <sha1>bf57bb8a83c7a51872c43015e6f813b825e04de8</sha1>
+              <branches class="list">
+                <hudson.plugins.git.Branch>
+                  <sha1 reference="../../../sha1"/>
+                  <name>refs/remotes/origin/main</name>
+                </hudson.plugins.git.Branch>
+              </branches>
+            </marked>
+            <revision reference="../marked"/>
+            <hudsonBuildNumber>32</hudsonBuildNumber>
+          </hudson.plugins.git.util.Build>
+        </entry>
+      </buildsByBranchName>
+      <lastBuild reference="../buildsByBranchName/entry/hudson.plugins.git.util.Build"/>
+      <remoteUrls>
+        <string>https://github.com/ShubhamBhavsar101/AWS-Blue-Green-Deployment</string>
+      </remoteUrls>
+    </hudson.plugins.git.util.BuildData>
+    <org.jenkinsci.plugins.workflow.steps.scm.MultiSCMRevisionState plugin="workflow-scm-step@437.v05a_f66b_e5ef8">
+      <revisionStates>
+        <entry>
+          <string>git https://github.com/ShubhamBhavsar101/AWS-Blue-Green-Deployment</string>
+          <hudson.scm.SCMRevisionState_-None/>
+        </entry>
+      </revisionStates>
+    </org.jenkinsci.plugins.workflow.steps.scm.MultiSCMRevisionState>
+    <org.jenkinsci.plugins.workflow.cps.EnvActionImpl plugin="workflow-cps@4117.vc0f3c515a_a_a_0">
+      <env class="tree-map">
+        <entry>
+          <string>DEPLOY_TO_ENV</string>
+          <string>green</string>
+        </entry>
+        <entry>
+          <string>DEPLOY_TO_TG_ARN</string>
+          <string>arn:aws:elasticloadbalancing:ap-south-1:842517499452:targetgroup/green-tg/2512444eccb6e20b</string>
+        </entry>
+        <entry>
+          <string>SWITCH_TO_ARN</string>
+          <string>arn:aws:elasticloadbalancing:ap-south-1:842517499452:targetgroup/green-tg/2512444eccb6e20b</string>
+        </entry>
+      </env>
+    </org.jenkinsci.plugins.workflow.cps.EnvActionImpl>
+    <org.jenkinsci.plugins.workflow.support.steps.input.InputAction plugin="pipeline-input-step@527.vd61b_1d3c5078">
+      <ids class="java.util.concurrent.CopyOnWriteArrayList"/>
+    </org.jenkinsci.plugins.workflow.support.steps.input.InputAction>
+    <jenkins.model.InterruptedBuildAction>
+      <causes>
+        <jenkins.model.CauseOfInterruption_-UserInterruption>
+          <user>shubh</user>
+        </jenkins.model.CauseOfInterruption_-UserInterruption>
+      </causes>
+    </jenkins.model.InterruptedBuildAction>
+    <jenkins.metrics.impl.SubTaskTimeInQueueAction plugin="metrics@4.2.32-476.v5042e1c1edd7">
+      <queuingDurationMillis>8</queuingDurationMillis>
+      <blockedDurationMillis>0</blockedDurationMillis>
+      <buildableDurationMillis>6</buildableDurationMillis>
+      <waitingDurationMillis>0</waitingDurationMillis>
+      <executingDurationMillis>232585</executingDurationMillis>
+      <workUnitCount>1</workUnitCount>
+    </jenkins.metrics.impl.SubTaskTimeInQueueAction>
+  </actions>
+  <queueId>62</queueId>
+  <timestamp>1751169139391</timestamp>
+  <startTime>1751169139394</startTime>
+  <result>ABORTED</result>
+  <duration>232877</duration>
+  <charset>UTF-8</charset>
+  <keepLog>false</keepLog>
+  <execution class="org.jenkinsci.plugins.workflow.cps.CpsFlowExecution">
+    <result>ABORTED</result>
+    <script>// ---&gt; PASTE YOUR REAL ARNs HERE &lt;---
+def BLUE_TG_ARN = &quot;arn:aws:elasticloadbalancing:ap-south-1:842517499452:targetgroup/blue-tg/abe593ed83cd16f2&quot;
+def GREEN_TG_ARN = &quot;arn:aws:elasticloadbalancing:ap-south-1:842517499452:targetgroup/green-tg/2512444eccb6e20b&quot;
+def LISTENER_ARN = &quot;arn:aws:elasticloadbalancing:ap-south-1:842517499452:listener/app/my-app-alb/b152e3cf6806334f/d5334709ce151d9d&quot;
+
+pipeline {
+    agent any
+    environment {
+        AWS_ACCESS_KEY_ID     = credentials(&apos;aws-access-key&apos;)
+        AWS_SECRET_ACCESS_KEY = credentials(&apos;aws-secret-key&apos;)
+        AWS_DEFAULT_REGION    = &apos;ap-south-1&apos;
+    }
+    stages {
+        stage(&apos;Checkout Code&apos;) {
+            steps {
+                git branch: &apos;main&apos;, url: &apos;https://github.com/ShubhamBhavsar101/AWS-Blue-Green-Deployment&apos;
+            }
+        }
+        stage(&apos;Live Traffic Check&apos;) {
+            steps {
+                script {
+                    def current_live_tg = sh(script: &quot;aws elbv2 describe-listeners --listener-arns ${LISTENER_ARN} | jq -r &apos;.Listeners[0].DefaultActions[0].TargetGroupArn&apos;&quot;, returnStdout: true).trim()
+                    echo &quot;The live traffic is in ${current_live_tg}&quot;
+                    }
+            }
+        }
+        stage(&apos;Confirmation to Deploy Code&apos;) {
+            steps {
+                script {
+                    def current_live_tg = sh(script: &quot;aws elbv2 describe-listeners --listener-arns ${LISTENER_ARN} | jq -r &apos;.Listeners[0].DefaultActions[0].TargetGroupArn&apos;&quot;, returnStdout: true).trim()
+
+                    if (current_live_tg == BLUE_TG_ARN) {
+                        env.DEPLOY_TO_ENV = &apos;green&apos;
+                        env.DEPLOY_TO_TG_ARN = GREEN_TG_ARN
+                        env.SWITCH_TO_ARN = GREEN_TG_ARN
+                    } else {
+                        env.DEPLOY_TO_ENV = &apos;blue&apos;
+                        env.DEPLOY_TO_TG_ARN = BLUE_TG_ARN
+                        env.SWITCH_TO_ARN = BLUE_TG_ARN
+                    }
+                    
+                    input &quot;The current live environment is NOT &apos;${env.DEPLOY_TO_ENV.toUpperCase()}&apos;. This pipeline will now configure and deploy to the &apos;${env.DEPLOY_TO_ENV.toUpperCase()}&apos; environment. Do you want to continue?&quot;
+                }
+            }
+        }
+
+        stage(&apos;Configure Inactive Server (Automated)&apos;) {
+            steps {
+                script {
+                    echo &quot;Running Ansible on the existing &apos;${env.DEPLOY_TO_ENV}-server&apos;...&quot;
+                    // We MUST provide the inventory here so Ansible can find the remote EC2 hosts.
+                    if (env.DEPLOY_TO_ENV == &apos;blue&apos;) {
+                        ansiblePlaybook(
+                            playbook: &apos;configure_blue.yml&apos;,
+                            inventory: &apos;aws_ec2.yml&apos;
+                        )
+                    } else {
+                        ansiblePlaybook(
+                            playbook: &apos;configure_green.yml&apos;,
+                            inventory: &apos;aws_ec2.yml&apos;
+                        )
+                    }
+                }
+            }
+        }
+
+        stage(&apos;Manual Approval to Go Live&apos;) {
+            steps {
+                script {
+                    echo &quot;Waiting 10 seconds for health checks to stabilize...&quot;
+                    sleep(10)
+                    
+                    def health = sh(
+                        script: &quot;aws elbv2 describe-target-health --target-group-arn ${env.DEPLOY_TO_TG_ARN} | jq -r &apos;.TargetHealthDescriptions[0].TargetHealth.State&apos;&quot;,
+                        returnStdout: true
+                    ).trim()
+                    
+                    if (health != &apos;healthy&apos;) {
+                        error(&quot;Deployment failed: The new environment &apos;${env.DEPLOY_TO_ENV}&apos; is not healthy. Current status is &apos;${health}&apos;. Aborting.&quot;)
+                    }
+                    
+                    echo &quot;SUCCESS: The new &apos;${env.DEPLOY_TO_ENV}&apos; environment is configured and HEALTHY.&quot;
+                    input &quot;Ready to switch live traffic to the &apos;${env.DEPLOY_TO_ENV}&apos; environment?&quot;
+                }
+            }
+        }
+
+        stage(&apos;Switch Live Traffic (Automated)&apos;) {
+            steps {
+                script {
+                    echo &quot;Switching live traffic automatically to ${env.DEPLOY_TO_ENV.toUpperCase()}...&quot;
+                    // The inventory parameter is NOT needed here because the playbook&apos;s
+                    // &apos;hosts&apos; is set to &apos;localhost&apos;, which Ansible always knows.
+                    ansiblePlaybook(
+                        playbook: &apos;traffic_switch.yml&apos;,
+                        extraVars: [
+                            listener_arn: LISTENER_ARN,
+                            new_target_group_arn: env.SWITCH_TO_ARN
+                        ]
+                    )
+                }
+            }
+        }
+        
+        stage(&apos;Deployment Complete&apos;) {
+            steps {
+                echo &quot;Success! The ${env.DEPLOY_TO_ENV.toUpperCase()} environment is now LIVE.&quot;
+            }
+        }
+    }
+}</script>
+    <loadedScripts class="linked-hash-map"/>
+    <durabilityHint>MAX_SURVIVABILITY</durabilityHint>
+    <timings class="map">
+      <entry>
+        <string>flowNode</string>
+        <long>186911758</long>
+      </entry>
+      <entry>
+        <string>classLoad</string>
+        <long>259014393</long>
+      </entry>
+      <entry>
+        <string>runQueue</string>
+        <long>868389560</long>
+      </entry>
+      <entry>
+        <string>run</string>
+        <long>780721371</long>
+      </entry>
+      <entry>
+        <string>parse</string>
+        <long>44531266</long>
+      </entry>
+      <entry>
+        <string>saveProgram</string>
+        <long>177628497</long>
+      </entry>
+    </timings>
+    <internalCalls class="sorted-set">
+      <string>org.jenkinsci.plugins.pipeline.StageStatus.TAG_NAME</string>
+    </internalCalls>
+    <sandbox>true</sandbox>
+    <iota>60</iota>
+    <head>1:60</head>
+    <done>true</done>
+    <resumeBlocked>false</resumeBlocked>
+    <storageDir>workflow-completed</storageDir>
+  </execution>
+  <completed>true</completed>
+  <checkouts class="hudson.util.PersistedList">
+    <org.jenkinsci.plugins.workflow.job.WorkflowRun_-SCMCheckout>
+      <scm class="hudson.plugins.git.GitSCM" plugin="git@5.7.0">
+        <configVersion>2</configVersion>
+        <userRemoteConfigs>
+          <hudson.plugins.git.UserRemoteConfig>
+            <url>https://github.com/ShubhamBhavsar101/AWS-Blue-Green-Deployment</url>
+          </hudson.plugins.git.UserRemoteConfig>
+        </userRemoteConfigs>
+        <branches class="singleton-list">
+          <hudson.plugins.git.BranchSpec>
+            <name>*/main</name>
+          </hudson.plugins.git.BranchSpec>
+        </branches>
+        <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+        <submoduleCfg class="empty-list"/>
+        <extensions>
+          <hudson.plugins.git.extensions.impl.LocalBranch>
+            <localBranch>main</localBranch>
+          </hudson.plugins.git.extensions.impl.LocalBranch>
+        </extensions>
+      </scm>
+      <node></node>
+      <workspace>/var/lib/jenkins/workspace/AWS-Blue-Green-Deployment</workspace>
+      <changelogFile>/var/lib/jenkins/jobs/AWS-Blue-Green-Deployment/builds/32/changelog3629202662089095281.xml</changelogFile>
+      <pollingBaseline class="hudson.scm.SCMRevisionState$None" reference="../../../actions/org.jenkinsci.plugins.workflow.steps.scm.MultiSCMRevisionState/revisionStates/entry/hudson.scm.SCMRevisionState_-None"/>
+    </org.jenkinsci.plugins.workflow.job.WorkflowRun_-SCMCheckout>
+  </checkouts>
+</flow-build>

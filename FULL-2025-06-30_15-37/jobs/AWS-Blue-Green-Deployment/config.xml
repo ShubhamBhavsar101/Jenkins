@@ -1,0 +1,132 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@1537.v66038d35fc76">
+  <actions>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobAction plugin="pipeline-model-definition@2.2255.v56a_15e805f12"/>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction plugin="pipeline-model-definition@2.2255.v56a_15e805f12">
+      <jobProperties/>
+      <triggers/>
+      <parameters/>
+      <options/>
+    </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
+  </actions>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@4117.vc0f3c515a_a_a_0">
+    <script>// ---&gt; PASTE YOUR REAL ARNs HERE &lt;---
+def BLUE_TG_ARN = &quot;arn:aws:elasticloadbalancing:ap-south-1:842517499452:targetgroup/blue-tg/abe593ed83cd16f2&quot;
+def GREEN_TG_ARN = &quot;arn:aws:elasticloadbalancing:ap-south-1:842517499452:targetgroup/green-tg/2512444eccb6e20b&quot;
+def LISTENER_ARN = &quot;arn:aws:elasticloadbalancing:ap-south-1:842517499452:listener/app/my-app-alb/b152e3cf6806334f/d5334709ce151d9d&quot;
+
+pipeline {
+    agent any
+    environment {
+        AWS_ACCESS_KEY_ID     = credentials(&apos;aws-access-key&apos;)
+        AWS_SECRET_ACCESS_KEY = credentials(&apos;aws-secret-key&apos;)
+        AWS_DEFAULT_REGION    = &apos;ap-south-1&apos;
+    }
+    stages {
+        stage(&apos;Checkout Code&apos;) {
+            steps {
+                git branch: &apos;main&apos;, url: &apos;https://github.com/ShubhamBhavsar101/AWS-Blue-Green-Deployment&apos;
+            }
+        }
+        stage(&apos;Live Traffic Check&apos;) {
+            steps {
+                script {
+                    def current_live_tg = sh(script: &quot;aws elbv2 describe-listeners --listener-arns ${LISTENER_ARN} | jq -r &apos;.Listeners[0].DefaultActions[0].TargetGroupArn&apos;&quot;, returnStdout: true).trim()
+                    def live_environment = (current_live_tg == BLUE_TG_ARN) ? &quot;BLUE&quot; : &quot;GREEN&quot;
+                    echo &quot;The live traffic is in ${live_environment}&quot;
+                    }
+            }
+        }
+        stage(&apos;Confirmation to Deploy Code&apos;) {
+            steps {
+                script {
+                    def current_live_tg = sh(script: &quot;aws elbv2 describe-listeners --listener-arns ${LISTENER_ARN} | jq -r &apos;.Listeners[0].DefaultActions[0].TargetGroupArn&apos;&quot;, returnStdout: true).trim()
+
+                    if (current_live_tg == BLUE_TG_ARN) {
+                        env.DEPLOY_TO_ENV = &apos;green&apos;
+                        env.DEPLOY_TO_TG_ARN = GREEN_TG_ARN
+                        env.SWITCH_TO_ARN = GREEN_TG_ARN
+                    } else {
+                        env.DEPLOY_TO_ENV = &apos;blue&apos;
+                        env.DEPLOY_TO_TG_ARN = BLUE_TG_ARN
+                        env.SWITCH_TO_ARN = BLUE_TG_ARN
+                    }
+                    
+                    input &quot;The current live environment is NOT &apos;${env.DEPLOY_TO_ENV.toUpperCase()}&apos;. This pipeline will now configure and deploy to the &apos;${env.DEPLOY_TO_ENV.toUpperCase()}&apos; environment. Do you want to continue?&quot;
+                }
+            }
+        }
+
+        stage(&apos;Configure Inactive Server (Automated)&apos;) {
+            steps {
+                script {
+                    echo &quot;Running Ansible on the existing &apos;${env.DEPLOY_TO_ENV}-server&apos;...&quot;
+                    // We MUST provide the inventory here so Ansible can find the remote EC2 hosts.
+                    if (env.DEPLOY_TO_ENV == &apos;blue&apos;) {
+                        ansiblePlaybook(
+                            playbook: &apos;configure_blue.yml&apos;,
+                            inventory: &apos;aws_ec2.yml&apos;
+                        )
+                    } else {
+                        ansiblePlaybook(
+                            playbook: &apos;configure_green.yml&apos;,
+                            inventory: &apos;aws_ec2.yml&apos;
+                        )
+                    }
+                }
+            }
+        }
+
+        stage(&apos;Manual Approval to Go Live&apos;) {
+            steps {
+                script {
+                    echo &quot;Waiting 10 seconds for health checks to stabilize...&quot;
+                    sleep(10)
+                    
+                    def health = sh(
+                        script: &quot;aws elbv2 describe-target-health --target-group-arn ${env.DEPLOY_TO_TG_ARN} | jq -r &apos;.TargetHealthDescriptions[0].TargetHealth.State&apos;&quot;,
+                        returnStdout: true
+                    ).trim()
+                    
+                    if (health != &apos;healthy&apos;) {
+                        error(&quot;Deployment failed: The new environment &apos;${env.DEPLOY_TO_ENV}&apos; is not healthy. Current status is &apos;${health}&apos;. Aborting.&quot;)
+                    }
+                    
+                    echo &quot;SUCCESS: The new &apos;${env.DEPLOY_TO_ENV}&apos; environment is configured and HEALTHY.&quot;
+                    input &quot;Ready to switch live traffic to the &apos;${env.DEPLOY_TO_ENV}&apos; environment?&quot;
+                }
+            }
+        }
+
+        stage(&apos;Switch Live Traffic (Automated)&apos;) {
+            steps {
+                script {
+                    echo &quot;Switching live traffic automatically to ${env.DEPLOY_TO_ENV.toUpperCase()}...&quot;
+                    // The inventory parameter is NOT needed here because the playbook&apos;s
+                    // &apos;hosts&apos; is set to &apos;localhost&apos;, which Ansible always knows.
+                    ansiblePlaybook(
+                        playbook: &apos;traffic_switch.yml&apos;,
+                        extraVars: [
+                            listener_arn: LISTENER_ARN,
+                            new_target_group_arn: env.SWITCH_TO_ARN
+                        ]
+                    )
+                }
+            }
+        }
+        
+        stage(&apos;Deployment Complete&apos;) {
+            steps {
+                echo &quot;Success! The ${env.DEPLOY_TO_ENV.toUpperCase()} environment is now LIVE.&quot;
+            }
+        }
+    }
+}</script>
+    <sandbox>true</sandbox>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>
